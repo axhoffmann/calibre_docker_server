@@ -1,8 +1,9 @@
 #!/bin/bash
+ebookconvert=/usr/bin/ebook-convert
 IFS=$'\n'
 formats=('epub' 'mobi' 'pdf')
 
-exist_in_array() {
+exists_in_array() {
     local element=$1 && shift
     local array=($@)
 
@@ -48,11 +49,15 @@ for book in books
 do
     for tformat in formats
     do
-        if ! exist_in_array $book.$tformat ${filenames[@]}
-            then for sformat in 
+        if ! exists_in_array $book.$tformat ${filenames[@]}
+            then for sformat in ( "${formats[@]/$tformat}" )
+                do
+                    if exists_in_array $book.$sformat ${filenames[@]}
+                        then `$ebookconvert $book.$sformat $book.$tformat`
+                        break
+                    fi
+                done
         fi
     done
 done
-
-
 
