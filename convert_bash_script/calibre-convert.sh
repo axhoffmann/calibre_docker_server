@@ -25,7 +25,7 @@ filenames=($(eval "find . -type f $find_formats" | sort))
 books=()
 for file in "${filenames[@]}"
 do
-    if ! exist_in_array ${file%.*} ${books[@]}
+    if ! exists_in_array ${file%.*} ${books[@]}
         then books+=(${file%.*})
     fi
 done
@@ -45,15 +45,17 @@ echo ${books[@]}
 #    echo "nein"
 #fi
 
-for book in books
+for book in ${books[@]}
 do
-    for tformat in formats
+    for tformat in ${formats[@]}
     do
         if ! exists_in_array $book.$tformat ${filenames[@]}
-            then for sformat in ( "${formats[@]/$tformat}" )
+            then 
+                sformats=( "${formats[@]/$tformat}" )
+                for sformat in ${sformats[@]}
                 do
                     if exists_in_array $book.$sformat ${filenames[@]}
-                        then `$ebookconvert $book.$sformat $book.$tformat`
+                        then $ebookconvert $book.$sformat $book.$tformat
                         break
                     fi
                 done
